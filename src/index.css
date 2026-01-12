@@ -96,20 +96,30 @@
 }
 
 @layer components {
-  /* Card elevations */
+  /* Card elevations with enhanced depth */
   .card-elevated {
-    @apply bg-card rounded-[14px] shadow-card;
+    @apply bg-card rounded-[14px] transition-all duration-300;
     box-shadow: var(--shadow-card);
   }
   
+  .card-elevated:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  
   .card-float {
-    @apply bg-card rounded-[16px];
+    @apply bg-card rounded-[16px] transition-all duration-300;
     box-shadow: var(--shadow-float);
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(244 33% 99%) 100%);
+  }
+  
+  .card-float:hover {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.14);
   }
   
   /* Status pills */
   .status-pill {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200;
   }
   
   .status-active {
@@ -124,36 +134,45 @@
     @apply bg-[hsl(0,72%,95%)] text-[hsl(0,72%,45%)];
   }
   
-  /* Flow node */
+  /* Flow node with enhanced interactions */
   .flow-node {
-    @apply bg-card rounded-[14px] p-4 w-[220px] min-h-[88px] cursor-pointer transition-all duration-200;
+    @apply bg-card rounded-[14px] p-4 w-[220px] min-h-[88px] cursor-pointer transition-all duration-300;
     box-shadow: var(--shadow-card);
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(244 33% 99%) 100%);
   }
   
   .flow-node:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover), 0 0 0 2px hsl(263 70% 50% / 0.15);
+    transform: translateY(-3px);
   }
   
   .flow-node.selected {
     @apply ring-2 ring-primary;
+    box-shadow: var(--shadow-hover), 0 0 20px hsl(263 70% 50% / 0.2);
   }
   
-  /* Agent card */
+  /* Agent card with futuristic hover */
   .agent-card {
-    @apply bg-muted rounded-[12px] p-4 w-full min-h-[96px] transition-all duration-200;
+    @apply bg-muted rounded-[12px] p-4 w-full min-h-[96px] transition-all duration-300;
   }
   
   .agent-card:hover {
     @apply bg-[hsl(244,33%,96%)];
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.08);
+    transform: translateY(-2px);
   }
   
-  /* Grid background for canvas */
+  /* Grid background for canvas with subtle gradient */
   .canvas-grid {
     background-image: 
-      linear-gradient(to right, hsl(240 6% 90% / 0.3) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(240 6% 90% / 0.3) 1px, transparent 1px);
+      linear-gradient(to right, hsl(240 6% 90% / 0.25) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(240 6% 90% / 0.25) 1px, transparent 1px);
     background-size: 24px 24px;
+  }
+  
+  /* Focus glow for inputs */
+  input:focus, textarea:focus, select:focus {
+    box-shadow: 0 0 0 3px hsl(263 70% 50% / 0.15);
   }
 }
 
