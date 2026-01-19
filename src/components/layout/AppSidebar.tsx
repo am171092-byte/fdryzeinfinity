@@ -20,8 +20,8 @@ const AppSidebar = () => {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">F</span>
           </div>
-          <span className="text-lg font-semibold text-sidebar-foreground tracking-tight">
-            Fulcrums IP
+          <span className="text-sm font-semibold text-sidebar-foreground tracking-tight">
+            FDRYZE® AI Studio
           </span>
         </div>
       </div>

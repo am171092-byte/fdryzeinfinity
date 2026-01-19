@@ -35,8 +35,8 @@ const Login = () => {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">F</span>
             </div>
-            <span className="text-2xl font-semibold text-foreground tracking-tight">
-              Fulcrums IP
+            <span className="text-xl font-semibold text-foreground tracking-tight">
+              FDRYZE® AI Studio
             </span>
           </div>
           <p className="text-muted-foreground text-sm">
