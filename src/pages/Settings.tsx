@@ -1,16 +1,27 @@
-import { useState } from "react";
+ import { useState, useEffect } from "react";
+ import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Palette } from "lucide-react";
+ import { User, Shield, Bell, Palette, Database } from "lucide-react";
+ import DataConnectionsTab from "@/components/settings/DataConnectionsTab";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
   { id: "role", label: "Role", icon: Shield },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "preferences", label: "Preferences", icon: Palette },
+   { id: "connections", label: "Data Connections", icon: Database },
 ];
 
 const Settings = () => {
+   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("profile");
+ 
+   useEffect(() => {
+     const tab = searchParams.get("tab");
+     if (tab && tabs.some((t) => t.id === tab)) {
+       setActiveTab(tab);
+     }
+   }, [searchParams]);
 
   return (
     <div className="p-8">
@@ -256,6 +267,8 @@ const Settings = () => {
               </div>
             </div>
           )}
+ 
+           {activeTab === "connections" && <DataConnectionsTab />}
         </motion.div>
       </div>
     </div>
