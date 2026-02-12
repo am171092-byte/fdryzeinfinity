@@ -11,12 +11,11 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Super Admin Dashboard", path: "/super-admin", icon: Shield },
-  { label: "Organization", path: "/org-dashboard", icon: Building2 },
+  { label: "Workspace", path: "/org-dashboard", icon: Building2 },
   { label: "FDRYZE Nexus", path: "/query", icon: MessageSquare },
   { label: "FDRYZE AI Studio", path: "/flows", icon: Workflow },
   { label: "Connectors", path: "/connectors", icon: Plug },
   { label: "Jobs", path: "/jobs", icon: Briefcase },
-  { label: "My Assistants", path: "/portal", icon: MessageSquare },
   { label: "Metrics", path: "/metrics", icon: BarChart3 },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
