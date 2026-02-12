@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
+import { useSidebarCollapse } from "@/contexts/SidebarContext";
 import logo from "@/assets/Ryze-Infinity-Logo.png";
 
 const roleHomeMap: Record<string, string> = {
@@ -24,9 +25,13 @@ const roleEmailMap: Record<string, string> = {
 const AppHeader = () => {
   const navigate = useNavigate();
   const { role, setRole } = useRole();
+  const { collapsed } = useSidebarCollapse();
 
   return (
-    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 fixed top-0 left-[260px] right-0 z-30">
+    <header
+      className="h-14 bg-card border-b border-border flex items-center justify-between px-6 fixed top-0 right-0 z-30 transition-all duration-300"
+      style={{ left: collapsed ? "68px" : "260px" }}
+    >
       <button
         onClick={() => navigate(roleHomeMap[role] || "/portal")}
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
