@@ -1,5 +1,5 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Workflow, MessageSquare, BarChart3, Settings, Shield, Building2 } from "lucide-react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Workflow, MessageSquare, BarChart3, Settings, Shield, Building2, LogOut } from "lucide-react";
 import { useRole, UserRole } from "@/contexts/RoleContext";
 
 interface NavItem {
@@ -21,7 +21,8 @@ const navItems: NavItem[] = [
 
 const AppSidebar = () => {
   const location = useLocation();
-  const { role } = useRole();
+  const { role, setRole } = useRole();
+  const navigate = useNavigate();
 
   const visibleItems = navItems.filter((item) => item.roles.includes(role));
 
@@ -68,7 +69,7 @@ const AppSidebar = () => {
       </nav>
 
       <div className="px-4 py-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-3">
           <div className="w-9 h-9 bg-primary-subtle rounded-full flex items-center justify-center">
             <span className="text-primary font-medium text-sm">
               {role === "super-admin" ? "SA" : role === "org-admin" ? "SM" : "JC"}
@@ -83,6 +84,16 @@ const AppSidebar = () => {
             </p>
           </div>
         </div>
+        <button
+          onClick={() => {
+            setRole("org-admin");
+            navigate("/");
+          }}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
       </div>
     </aside>
   );
