@@ -36,8 +36,8 @@ interface KnowledgeSource {
 const steps = [
   { id: 1, label: "Knowledgebase", description: "Select sources" },
   { id: 2, label: "Configure", description: "Customize behavior" },
-  { id: 3, label: "Preview", description: "Test assistant" },
-  { id: 4, label: "Assign", description: "Users & groups" },
+  { id: 3, label: "Assign", description: "Users & groups" },
+  { id: 4, label: "Preview", description: "Visual preview" },
   { id: 5, label: "Publish", description: "Go live" },
 ];
 
@@ -192,12 +192,12 @@ const QueryAssistant = () => {
         )}
         {currentStep === 3 && (
           <motion.div key="step3" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            <TestPublishStep themeColor={themeColor} assistantName={assistantName} onBack={() => setCurrentStep(2)} onPublish={() => setCurrentStep(4)} isPublished={false} isPreviewOnly />
+            <AssignUsersStep onContinue={() => setCurrentStep(4)} onBack={() => setCurrentStep(2)} assignedCount={assignedCount} onAssignedCountChange={setAssignedCount} />
           </motion.div>
         )}
         {currentStep === 4 && (
           <motion.div key="step4" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            <AssignUsersStep onContinue={() => setCurrentStep(5)} onBack={() => setCurrentStep(3)} assignedCount={assignedCount} onAssignedCountChange={setAssignedCount} />
+            <TestPublishStep themeColor={themeColor} assistantName={assistantName} onBack={() => setCurrentStep(3)} onPublish={() => setCurrentStep(5)} isPublished={false} isPreviewOnly />
           </motion.div>
         )}
         {currentStep === 5 && (
