@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Plus, Sparkles, Database, Clock, MoreHorizontal, Users } from "lucide-react";
+import { useRole } from "@/contexts/RoleContext";
 
 interface Assistant {
   id: string;
@@ -25,6 +26,9 @@ const assistants: Assistant[] = [
 ];
 
 const AssistantsHome = ({ onCreateNew, onSelectAssistant }: AssistantsHomeProps) => {
+  const { role } = useRole();
+  const isAdmin = role === "org-admin";
+
   return (
     <div className="p-8">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between mb-8">
@@ -32,15 +36,17 @@ const AssistantsHome = ({ onCreateNew, onSelectAssistant }: AssistantsHomeProps)
           <h1 className="text-page-title mb-2">FDRYZE Nexus</h1>
           <p className="text-muted-foreground">AI assistants configured for your teams</p>
         </div>
-        <motion.button
-          onClick={onCreateNew}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="h-11 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-primary/25 transition-all"
-        >
-          <Plus className="w-5 h-5" />
-          Create New Assistant
-        </motion.button>
+        {isAdmin && (
+          <motion.button
+            onClick={onCreateNew}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="h-11 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-primary/25 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+            Create New Assistant
+          </motion.button>
+        )}
       </motion.div>
 
       {assistants.length > 0 ? (
@@ -62,9 +68,11 @@ const AssistantsHome = ({ onCreateNew, onSelectAssistant }: AssistantsHomeProps)
                   <span className={`status-pill ${assistant.status === "published" ? "status-active" : "bg-warning/10 text-warning"}`}>
                     {assistant.status === "published" ? "Active" : "Draft"}
                   </span>
-                  <button className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
+                  {isAdmin && (
+                    <button className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -102,10 +110,12 @@ const AssistantsHome = ({ onCreateNew, onSelectAssistant }: AssistantsHomeProps)
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             Create your first assistant to answer business questions using your connected knowledge sources.
           </p>
-          <motion.button onClick={onCreateNew} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="h-11 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-xl inline-flex items-center gap-2 shadow-lg shadow-primary/25 transition-all">
-            <Plus className="w-5 h-5" />
-            Create New Assistant
-          </motion.button>
+          {isAdmin && (
+            <motion.button onClick={onCreateNew} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="h-11 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-xl inline-flex items-center gap-2 shadow-lg shadow-primary/25 transition-all">
+              <Plus className="w-5 h-5" />
+              Create New Assistant
+            </motion.button>
+          )}
         </motion.div>
       )}
     </div>

@@ -2,23 +2,28 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { useRole, UserRole } from "@/contexts/RoleContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setRole } = useRole();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState("Organization Admin");
   const [isRoleOpen, setIsRoleOpen] = useState(false);
 
-  const roles = [
-    { label: "Super Admin", route: "/super-admin" },
-    { label: "Organization Admin", route: "/org-dashboard" },
-    { label: "User", route: "/portal" },
+  const roles: { label: string; value: UserRole; route: string }[] = [
+    { label: "Super Admin", value: "super-admin", route: "/super-admin" },
+    { label: "Organization Admin", value: "org-admin", route: "/org-dashboard" },
+    { label: "User", value: "user", route: "/portal" },
   ];
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const role = roles.find((r) => r.label === selectedRole);
-    navigate(role?.route || "/portal");
+    if (role) {
+      setRole(role.value);
+      navigate(role.route);
+    }
   };
 
   return (
