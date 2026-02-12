@@ -1,10 +1,13 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Workflow, MessageSquare, BarChart3, Settings } from "lucide-react";
+import { LayoutDashboard, Workflow, MessageSquare, BarChart3, Settings, Shield, Building2 } from "lucide-react";
 
 const navItems = [
+  { label: "Super Admin", path: "/super-admin", icon: Shield, roles: ["super-admin"] },
+  { label: "Organization", path: "/org-dashboard", icon: Building2, roles: ["org-admin"] },
+  { label: "My Assistants", path: "/portal", icon: MessageSquare, roles: ["user"] },
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { label: "My Business Flows", path: "/flows", icon: Workflow },
-  { label: "Query Assistant", path: "/query", icon: MessageSquare },
+  { label: "FDRYZE AI Studio", path: "/flows", icon: Workflow },
+  { label: "FDRYZE Nexus", path: "/query", icon: MessageSquare },
   { label: "Performance & Metrics", path: "/metrics", icon: BarChart3 },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
@@ -14,23 +17,21 @@ const AppSidebar = () => {
 
   return (
     <aside className="w-[260px] h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-40">
-      {/* Logo */}
       <div className="h-16 px-6 flex items-center border-b border-sidebar-border">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">F</span>
           </div>
           <span className="text-sm font-semibold text-sidebar-foreground tracking-tight">
-            FDRYZE® AI Studio
+            FDRYZE® INFINITY
           </span>
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
+            const isActive = location.pathname === item.path ||
               (item.path === "/flows" && location.pathname.startsWith("/flows"));
             const Icon = item.icon;
 
@@ -56,19 +57,14 @@ const AppSidebar = () => {
         </ul>
       </nav>
 
-      {/* User info */}
       <div className="px-4 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-primary-subtle rounded-full flex items-center justify-center">
             <span className="text-primary font-medium text-sm">SM</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
-              Sarah Mitchell
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              Senior Underwriter
-            </p>
+            <p className="text-sm font-medium text-sidebar-foreground truncate">Sarah Mitchell</p>
+            <p className="text-xs text-muted-foreground truncate">Org Admin</p>
           </div>
         </div>
       </div>
