@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, CheckCircle, AlertCircle, Users, Database, Palette, Briefcase, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Sparkles, CheckCircle, AlertCircle, Users, Database, Palette } from "lucide-react";
 
 interface PublishStepProps {
   assistantName: string;
@@ -13,11 +12,6 @@ interface PublishStepProps {
   isPublished: boolean;
 }
 
-// Simulated job status for selected knowledge sources
-const pendingJobs = [
-  { id: "JOB-002", source: "AWS S3 - Reports", status: "running", progress: 68 },
-  { id: "JOB-003", source: "PostgreSQL - Analytics", status: "pending", progress: 0 },
-];
 
 const PublishStep = ({
   assistantName,
@@ -29,9 +23,7 @@ const PublishStep = ({
   onPublish,
   isPublished,
 }: PublishStepProps) => {
-  const navigate = useNavigate();
-  const hasIncompleteJobs = pendingJobs.length > 0;
-  const canPublish = assignedCount > 0 && selectedSourceCount > 0 && assistantName.trim().length > 0 && !hasIncompleteJobs;
+  const canPublish = assignedCount > 0 && selectedSourceCount > 0 && assistantName.trim().length > 0;
 
   return (
     <div className="w-full max-w-[700px]">
@@ -83,36 +75,8 @@ const PublishStep = ({
           </div>
         </div>
 
-        {/* Job Blocking Banner */}
-        {hasIncompleteJobs && (
-          <div className="p-4 bg-[hsl(32,95%,95%)] rounded-xl mb-6">
-            <div className="flex items-start gap-3 mb-3">
-              <Briefcase className="w-5 h-5 text-[hsl(32,95%,44%)] shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-[hsl(32,95%,30%)]">
-                  Publishing is blocked until all indexing and sync jobs complete.
-                </p>
-                <div className="mt-2 space-y-1">
-                  {pendingJobs.map((job) => (
-                    <p key={job.id} className="text-xs text-[hsl(32,95%,35%)]">
-                      {job.id}: {job.source} — {job.status} ({job.progress}%)
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => navigate("/jobs")}
-              className="text-sm text-primary hover:text-primary-hover font-medium flex items-center gap-1 ml-8"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              View Jobs
-            </button>
-          </div>
-        )}
-
         {/* Validation */}
-        {!canPublish && !hasIncompleteJobs && (
+        {!canPublish && (
           <div className="flex items-start gap-3 p-4 bg-[hsl(32,95%,95%)] rounded-xl mb-6">
             <AlertCircle className="w-5 h-5 text-[hsl(32,95%,44%)] shrink-0 mt-0.5" />
             <div className="text-sm text-[hsl(32,95%,30%)]">
