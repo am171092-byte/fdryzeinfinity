@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { SidebarCollapseProvider } from "@/contexts/SidebarContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Flows from "./pages/Flows";
@@ -26,6 +27,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <RoleProvider>
+        <SidebarCollapseProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -49,6 +51,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </SidebarCollapseProvider>
       </RoleProvider>
     </TooltipProvider>
   </QueryClientProvider>
