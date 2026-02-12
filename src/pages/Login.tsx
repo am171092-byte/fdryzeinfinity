@@ -6,19 +6,19 @@ import { ChevronDown, Eye, EyeOff } from "lucide-react";
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("Insurance Underwriter");
+  const [selectedRole, setSelectedRole] = useState("Organization Admin");
   const [isRoleOpen, setIsRoleOpen] = useState(false);
 
   const roles = [
-    "Insurance Underwriter",
-    "Claims Analyst",
-    "Risk Manager",
-    "Policy Administrator",
+    { label: "Super Admin", route: "/super-admin" },
+    { label: "Organization Admin", route: "/org-dashboard" },
+    { label: "User", route: "/portal" },
   ];
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    const role = roles.find((r) => r.label === selectedRole);
+    navigate(role?.route || "/portal");
   };
 
   return (
@@ -36,11 +36,11 @@ const Login = () => {
               <span className="text-primary-foreground font-bold text-lg">F</span>
             </div>
             <span className="text-xl font-semibold text-foreground tracking-tight">
-              FDRYZE® AI Studio
+              FDRYZE® INFINITY
             </span>
           </div>
           <p className="text-muted-foreground text-sm">
-            AI-powered underwriting workflows
+            Enterprise AI platform
           </p>
         </div>
 
@@ -69,19 +69,19 @@ const Login = () => {
                 >
                   {roles.map((role) => (
                     <button
-                      key={role}
+                      key={role.label}
                       type="button"
                       onClick={() => {
-                        setSelectedRole(role);
+                        setSelectedRole(role.label);
                         setIsRoleOpen(false);
                       }}
                       className={`w-full px-4 py-3 text-left hover:bg-muted transition-colors ${
-                        selectedRole === role
+                        selectedRole === role.label
                           ? "bg-primary-subtle text-primary"
                           : "text-foreground"
                       }`}
                     >
-                      {role}
+                      {role.label}
                     </button>
                   ))}
                 </motion.div>
@@ -94,7 +94,7 @@ const Login = () => {
             <label className="text-sm font-medium text-foreground">Username</label>
             <input
               type="text"
-              defaultValue="sarah.mitchell@acme-insurance.com"
+              defaultValue="admin@acme-corp.com"
               className="w-full h-12 px-4 bg-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
           </div>
@@ -123,12 +123,12 @@ const Login = () => {
             type="submit"
             className="w-full h-12 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-lg transition-colors mt-6"
           >
-            Continue to Dashboard
+            Sign In
           </button>
         </form>
 
         <p className="text-center text-helper text-xs mt-6">
-          FDRYZE® AI Studio v2.4.1 — Enterprise Edition
+          FDRYZE® INFINITY — Enterprise Edition
         </p>
       </motion.div>
     </div>
