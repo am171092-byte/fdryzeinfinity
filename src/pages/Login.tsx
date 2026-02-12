@@ -1,28 +1,37 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { useRole, UserRole } from "@/contexts/RoleContext";
+import logo from "@/assets/Ryze-Infinity-Logo.png";
+
+const EMAIL_ROLE_MAP: Record<string, { role: UserRole; route: string }> = {
+  "superadmin@test.com": { role: "super-admin", route: "/super-admin" },
+  "admin@test.com": { role: "org-admin", route: "/org-dashboard" },
+  "user@test.com": { role: "user", route: "/portal" },
+};
 
 const Login = () => {
   const navigate = useNavigate();
   const { setRole } = useRole();
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("Organization Admin");
-  const [isRoleOpen, setIsRoleOpen] = useState(false);
-
-  const roles: { label: string; value: UserRole; route: string }[] = [
-    { label: "Super Admin", value: "super-admin", route: "/super-admin" },
-    { label: "Organization Admin", value: "org-admin", route: "/org-dashboard" },
-    { label: "User", value: "user", route: "/portal" },
-  ];
+  const [email, setEmail] = useState("");
+  const [showLimitedBanner, setShowLimitedBanner] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const role = roles.find((r) => r.label === selectedRole);
-    if (role) {
-      setRole(role.value);
-      navigate(role.route);
+    const normalizedEmail = email.trim().toLowerCase();
+    const mapping = EMAIL_ROLE_MAP[normalizedEmail];
+
+    if (mapping) {
+      setShowLimitedBanner(false);
+      setRole(mapping.role);
+      navigate(mapping.route);
+    } else {
+      // Default to user role with limited access banner
+      setRole("user");
+      setShowLimitedBanner(true);
+      setTimeout(() => navigate("/portal"), 1200);
     }
   };
 
@@ -36,70 +45,34 @@ const Login = () => {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">F</span>
-            </div>
-            <span className="text-xl font-semibold text-foreground tracking-tight">
-              FDRYZE® INFINITY
-            </span>
-          </div>
+          <img src={logo} alt="RYZE INFINITY" className="h-20 mb-3 object-contain" />
           <p className="text-muted-foreground text-sm">
-            Enterprise AI platform
+            Enterprise AI Platform
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          {/* Role Selector */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Role</label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsRoleOpen(!isRoleOpen)}
-                className="w-full h-12 px-4 bg-background border border-input rounded-lg flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-              >
-                <span className="text-foreground">{selectedRole}</span>
-                <ChevronDown
-                  className={`w-5 h-5 text-muted-foreground transition-transform ${
-                    isRoleOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {isRoleOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full left-0 right-0 mt-1 bg-card border border-input rounded-lg shadow-float z-50 overflow-hidden"
-                >
-                  {roles.map((role) => (
-                    <button
-                      key={role.label}
-                      type="button"
-                      onClick={() => {
-                        setSelectedRole(role.label);
-                        setIsRoleOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-muted transition-colors ${
-                        selectedRole === role.label
-                          ? "bg-primary-subtle text-primary"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {role.label}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </div>
-          </div>
+        {/* Limited Access Banner */}
+        {showLimitedBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 p-3 bg-[hsl(32,95%,95%)] rounded-lg mb-5"
+          >
+            <AlertTriangle className="w-5 h-5 text-[hsl(32,95%,44%)] shrink-0" />
+            <p className="text-sm text-[hsl(32,95%,30%)]">Limited access demo account</p>
+          </motion.div>
+        )}
 
-          {/* Username */}
+        <form onSubmit={handleLogin} className="space-y-5">
+          {/* Email */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Username</label>
+            <label className="text-sm font-medium text-foreground">Email</label>
             <input
-              type="text"
-              defaultValue="admin@acme-corp.com"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
               className="w-full h-12 px-4 bg-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
           </div>

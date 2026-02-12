@@ -1,30 +1,29 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Workflow, MessageSquare, BarChart3, Settings, Shield, Building2, LogOut } from "lucide-react";
-import { useRole, UserRole } from "@/contexts/RoleContext";
+import { Workflow, MessageSquare, BarChart3, Settings, Shield, Building2, LogOut, Plug, Briefcase } from "lucide-react";
+import { useRole } from "@/contexts/RoleContext";
 
 interface NavItem {
   label: string;
   path: string;
   icon: React.ElementType;
-  roles: UserRole[];
 }
 
 const navItems: NavItem[] = [
-  { label: "Super Admin Dashboard", path: "/super-admin", icon: Shield, roles: ["super-admin"] },
-  { label: "Organization", path: "/org-dashboard", icon: Building2, roles: ["org-admin"] },
-  { label: "FDRYZE Nexus", path: "/query", icon: MessageSquare, roles: ["org-admin"] },
-  { label: "FDRYZE AI Studio", path: "/flows", icon: Workflow, roles: ["org-admin"] },
-  { label: "Performance & Metrics", path: "/metrics", icon: BarChart3, roles: ["org-admin"] },
-  { label: "My Assistants", path: "/portal", icon: MessageSquare, roles: ["user"] },
-  { label: "Settings", path: "/settings", icon: Settings, roles: ["super-admin", "org-admin", "user"] },
+  { label: "Super Admin Dashboard", path: "/super-admin", icon: Shield },
+  { label: "Organization", path: "/org-dashboard", icon: Building2 },
+  { label: "FDRYZE Nexus", path: "/query", icon: MessageSquare },
+  { label: "FDRYZE AI Studio", path: "/flows", icon: Workflow },
+  { label: "Connectors", path: "/connectors", icon: Plug },
+  { label: "Jobs", path: "/jobs", icon: Briefcase },
+  { label: "My Assistants", path: "/portal", icon: MessageSquare },
+  { label: "Metrics", path: "/metrics", icon: BarChart3 },
+  { label: "Settings", path: "/settings", icon: Settings },
 ];
 
 const AppSidebar = () => {
   const location = useLocation();
   const { role, setRole } = useRole();
   const navigate = useNavigate();
-
-  const visibleItems = navItems.filter((item) => item.roles.includes(role));
 
   return (
     <aside className="w-[260px] h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-40">
@@ -41,7 +40,7 @@ const AppSidebar = () => {
 
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
-          {visibleItems.map((item) => {
+          {navItems.map((item) => {
             const isActive = location.pathname === item.path ||
               (item.path === "/flows" && location.pathname.startsWith("/flows"));
             const Icon = item.icon;

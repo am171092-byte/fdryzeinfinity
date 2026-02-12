@@ -14,6 +14,8 @@ import Settings from "./pages/Settings";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import OrgDashboard from "./pages/OrgDashboard";
 import UserPortal from "./pages/UserPortal";
+import Connectors from "./pages/Connectors";
+import Jobs from "./pages/Jobs";
 import AppLayout from "./components/layout/AppLayout";
 import RoleGuard from "./components/layout/RoleGuard";
 import NotFound from "./pages/NotFound";
@@ -31,15 +33,17 @@ const App = () => (
             <Route path="/" element={<Login />} />
             
             <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<RoleGuard allowedRoles={["org-admin"]}><Dashboard /></RoleGuard>} />
-              <Route path="/flows" element={<RoleGuard allowedRoles={["org-admin"]}><Flows /></RoleGuard>} />
-              <Route path="/flows/:flowId" element={<RoleGuard allowedRoles={["org-admin"]}><FlowEditor /></RoleGuard>} />
-              <Route path="/query" element={<RoleGuard allowedRoles={["org-admin"]}><QueryAssistant /></RoleGuard>} />
-              <Route path="/metrics" element={<RoleGuard allowedRoles={["org-admin"]}><Metrics /></RoleGuard>} />
-              <Route path="/settings" element={<RoleGuard allowedRoles={["super-admin", "org-admin", "user"]}><Settings /></RoleGuard>} />
-              <Route path="/super-admin" element={<RoleGuard allowedRoles={["super-admin"]}><SuperAdminDashboard /></RoleGuard>} />
-              <Route path="/org-dashboard" element={<RoleGuard allowedRoles={["org-admin"]}><OrgDashboard /></RoleGuard>} />
-              <Route path="/portal" element={<RoleGuard allowedRoles={["user"]}><UserPortal /></RoleGuard>} />
+              <Route path="/dashboard" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><Dashboard /></RoleGuard>} />
+              <Route path="/flows" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><Flows /></RoleGuard>} />
+              <Route path="/flows/:flowId" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><FlowEditor /></RoleGuard>} />
+              <Route path="/query" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><QueryAssistant /></RoleGuard>} />
+              <Route path="/metrics" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><Metrics /></RoleGuard>} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/super-admin" element={<RoleGuard allowedRoles={["super-admin"]} requiredRoleLabel="Super Admin"><SuperAdminDashboard /></RoleGuard>} />
+              <Route path="/org-dashboard" element={<RoleGuard allowedRoles={["org-admin"]} requiredRoleLabel="Organization Admin"><OrgDashboard /></RoleGuard>} />
+              <Route path="/portal" element={<UserPortal />} />
+              <Route path="/connectors" element={<Connectors />} />
+              <Route path="/jobs" element={<Jobs />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

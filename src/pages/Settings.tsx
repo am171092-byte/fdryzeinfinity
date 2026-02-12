@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Palette, Database } from "lucide-react";
-import DataConnectionsTab from "@/components/settings/DataConnectionsTab";
+import { User, Shield, Bell, Palette } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
 
 const allTabs = [
@@ -10,7 +9,6 @@ const allTabs = [
   { id: "role", label: "Role", icon: Shield, roles: ["super-admin", "org-admin", "user"] },
   { id: "notifications", label: "Notifications", icon: Bell, roles: ["super-admin", "org-admin", "user"] },
   { id: "preferences", label: "Preferences", icon: Palette, roles: ["super-admin", "org-admin", "user"] },
-  { id: "connections", label: "Data Connections", icon: Database, roles: ["org-admin"] },
 ] as const;
 
 const Settings = () => {
@@ -243,7 +241,6 @@ const Settings = () => {
             </div>
           )}
 
-          {activeTab === "connections" && <DataConnectionsTab />}
         </motion.div>
       </div>
     </div>
