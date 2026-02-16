@@ -1,12 +1,7 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Check, X, Search, Trash2 } from "lucide-react";
-import { SharePointSiteBlock as SiteBlockType, ContentType, FilterMode } from "./types";
+import { Check, X, Trash2 } from "lucide-react";
+import { SharePointSiteBlock as SiteBlockType, ContentType } from "./types";
 import FileTypeFilter from "./FileTypeFilter";
-
-const LIBRARY_ITEMS = ["Shared Documents", "Knowledge Base", "Policies", "Contracts"];
-const LIST_ITEMS = ["Requests", "Vendors", "Assets"];
-const PAGE_ITEMS = ["Home.aspx", "FAQ.aspx", "SOP.aspx"];
 
 interface SharePointSiteBlockProps {
   block: SiteBlockType;
@@ -17,8 +12,6 @@ interface SharePointSiteBlockProps {
 }
 
 const SharePointSiteBlockComponent = ({ block, onChange, onRemove, canRemove, index }: SharePointSiteBlockProps) => {
-  const [itemSearch, setItemSearch] = useState("");
-
   const update = (partial: Partial<SiteBlockType>) => onChange({ ...block, ...partial });
 
   const handleValidateUrl = () => {
@@ -31,32 +24,8 @@ const SharePointSiteBlockComponent = ({ block, onChange, onRemove, canRemove, in
   };
 
   const handleContentTypeChange = (ct: ContentType) => {
-    update({
-      contentType: ct === block.contentType ? null : ct,
-      selectedItems: [],
-    });
+    update({ contentType: ct === block.contentType ? null : ct });
   };
-
-  const handleFilterModeSwitch = (mode: FilterMode) => {
-    update({ filterMode: mode, selectedItems: [] });
-  };
-
-  const toggleItem = (item: string) => {
-    update({
-      selectedItems: block.selectedItems.includes(item)
-        ? block.selectedItems.filter((i) => i !== item)
-        : [...block.selectedItems, item],
-    });
-  };
-
-  const items = block.contentType === "document-library" ? LIBRARY_ITEMS
-    : block.contentType === "list" ? LIST_ITEMS
-    : block.contentType === "pages" ? PAGE_ITEMS : [];
-
-  const filteredItems = items.filter((i) => i.toLowerCase().includes(itemSearch.toLowerCase()));
-
-  const contentTypeLabel = block.contentType === "document-library" ? "document libraries"
-    : block.contentType === "list" ? "lists" : block.contentType === "pages" ? "pages" : "";
 
   return (
     <div className="p-5 border border-border rounded-xl bg-card/50 space-y-5">
@@ -119,7 +88,7 @@ const SharePointSiteBlockComponent = ({ block, onChange, onRemove, canRemove, in
         </button>
       </div>
 
-      {/* Side-by-side: Content Type + File Type */}
+      {/* Side-by-side: Content Type + File Types */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Left: Content Type */}
         <div className="space-y-3">
@@ -149,86 +118,14 @@ const SharePointSiteBlockComponent = ({ block, onChange, onRemove, canRemove, in
           )}
         </div>
 
-        {/* Right: File Type Filter */}
+        {/* Right: File Types */}
         <div>
           <FileTypeFilter
-            mode={block.fileTypeFilterMode}
-            onModeChange={(mode) => update({ fileTypeFilterMode: mode, selectedFileTypes: mode ? block.selectedFileTypes : [] })}
             selected={block.selectedFileTypes}
             onSelectedChange={(types) => update({ selectedFileTypes: types })}
           />
         </div>
       </div>
-
-      {/* Include/Exclude items — only if content type selected */}
-      {block.contentType && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-          <label className="text-sm font-medium text-foreground">Select Content</label>
-          <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
-            <button
-              type="button"
-              onClick={() => handleFilterModeSwitch("include")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                block.filterMode === "include" ? "bg-card text-foreground shadow" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Include
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFilterModeSwitch("exclude")}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                block.filterMode === "exclude" ? "bg-card text-foreground shadow" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Exclude
-            </button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {block.filterMode === "include"
-              ? "Only the selected items will be ingested."
-              : "Everything will be ingested except the selected items."}
-          </p>
-
-          {/* Item Picker */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              Select {contentTypeLabel} to {block.filterMode === "include" ? "include" : "exclude"}
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                value={itemSearch}
-                onChange={(e) => setItemSearch(e.target.value)}
-                placeholder="Search..."
-                className="w-full h-9 pl-9 pr-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-              />
-            </div>
-            <div className="space-y-1 max-h-48 overflow-y-auto">
-              {filteredItems.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => toggleItem(item)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left transition-all ${
-                    block.selectedItems.includes(item)
-                      ? "bg-primary-subtle text-primary font-medium"
-                      : "bg-card text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-                    block.selectedItems.includes(item) ? "bg-primary border-primary" : "border-input"
-                  }`}>
-                    {block.selectedItems.includes(item) && <Check className="w-3 h-3 text-primary-foreground" />}
-                  </div>
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };

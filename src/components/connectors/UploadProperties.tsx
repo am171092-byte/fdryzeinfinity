@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
-import { Shield, Upload, FileText, File, X, CheckCircle, Loader2 } from "lucide-react";
-import { FilterMode } from "./types";
+import { Shield, Upload, X, CheckCircle, Loader2 } from "lucide-react";
 import FileTypeFilter from "./FileTypeFilter";
 
 export interface UploadedFile {
@@ -14,8 +13,6 @@ export interface UploadedFile {
 interface UploadPropertiesProps {
   uploadedFiles: UploadedFile[];
   onUploadedFilesChange: (files: UploadedFile[]) => void;
-  fileTypeFilterMode: FilterMode | null;
-  onFileTypeFilterModeChange: (mode: FilterMode | null) => void;
   selectedFileTypes: string[];
   onSelectedFileTypesChange: (types: string[]) => void;
 }
@@ -56,7 +53,6 @@ const statusPill = (status: UploadedFile["status"]) => {
 
 const UploadProperties = ({
   uploadedFiles, onUploadedFilesChange,
-  fileTypeFilterMode, onFileTypeFilterModeChange,
   selectedFileTypes, onSelectedFileTypesChange,
 }: UploadPropertiesProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -147,8 +143,6 @@ const UploadProperties = ({
       )}
 
       <FileTypeFilter
-        mode={fileTypeFilterMode}
-        onModeChange={onFileTypeFilterModeChange}
         selected={selectedFileTypes}
         onSelectedChange={onSelectedFileTypesChange}
       />

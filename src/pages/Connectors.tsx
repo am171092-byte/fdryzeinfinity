@@ -11,7 +11,7 @@ import UploadProperties from "@/components/connectors/UploadProperties";
 import GoogleDriveProperties from "@/components/connectors/GoogleDriveProperties";
 import S3Properties from "@/components/connectors/S3Properties";
 import {
-  ConnectorData, ConnectorTypeId, FilterMode,
+  ConnectorData, ConnectorTypeId,
   SharePointSiteBlock, createEmptySiteBlock,
 } from "@/components/connectors/types";
 
@@ -60,15 +60,12 @@ const Connectors = () => {
   const [siteBlocks, setSiteBlocks] = useState<SharePointSiteBlock[]>([createEmptySiteBlock()]);
   // Upload
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [uploadFileTypeFilterMode, setUploadFileTypeFilterMode] = useState<FilterMode | null>(null);
   const [uploadSelectedFileTypes, setUploadSelectedFileTypes] = useState<string[]>([]);
   // Google Drive
   const [gdSourceUrl, setGdSourceUrl] = useState("");
-  const [gdFileTypeFilterMode, setGdFileTypeFilterMode] = useState<FilterMode | null>(null);
   const [gdSelectedFileTypes, setGdSelectedFileTypes] = useState<string[]>([]);
   // S3
   const [s3SourceUrl, setS3SourceUrl] = useState("");
-  const [s3FileTypeFilterMode, setS3FileTypeFilterMode] = useState<FilterMode | null>(null);
   const [s3SelectedFileTypes, setS3SelectedFileTypes] = useState<string[]>([]);
 
   if (role !== "org-admin") {
@@ -80,13 +77,10 @@ const Connectors = () => {
     setConnectorType(null);
     setSiteBlocks([createEmptySiteBlock()]);
     setUploadedFiles([]);
-    setUploadFileTypeFilterMode(null);
     setUploadSelectedFileTypes([]);
     setGdSourceUrl("");
-    setGdFileTypeFilterMode(null);
     setGdSelectedFileTypes([]);
     setS3SourceUrl("");
-    setS3FileTypeFilterMode(null);
     setS3SelectedFileTypes([]);
     setIsCreating(false);
   };
@@ -238,8 +232,6 @@ const Connectors = () => {
                 <UploadProperties
                   uploadedFiles={uploadedFiles}
                   onUploadedFilesChange={setUploadedFiles}
-                  fileTypeFilterMode={uploadFileTypeFilterMode}
-                  onFileTypeFilterModeChange={setUploadFileTypeFilterMode}
                   selectedFileTypes={uploadSelectedFileTypes}
                   onSelectedFileTypesChange={setUploadSelectedFileTypes}
                 />
@@ -249,8 +241,6 @@ const Connectors = () => {
                 <GoogleDriveProperties
                   sourceUrl={gdSourceUrl}
                   onSourceUrlChange={setGdSourceUrl}
-                  fileTypeFilterMode={gdFileTypeFilterMode}
-                  onFileTypeFilterModeChange={setGdFileTypeFilterMode}
                   selectedFileTypes={gdSelectedFileTypes}
                   onSelectedFileTypesChange={setGdSelectedFileTypes}
                 />
@@ -260,8 +250,6 @@ const Connectors = () => {
                 <S3Properties
                   sourceUrl={s3SourceUrl}
                   onSourceUrlChange={setS3SourceUrl}
-                  fileTypeFilterMode={s3FileTypeFilterMode}
-                  onFileTypeFilterModeChange={setS3FileTypeFilterMode}
                   selectedFileTypes={s3SelectedFileTypes}
                   onSelectedFileTypesChange={setS3SelectedFileTypes}
                 />
