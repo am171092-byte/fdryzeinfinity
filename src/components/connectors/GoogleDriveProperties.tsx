@@ -1,21 +1,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, X, Shield } from "lucide-react";
-import { FilterMode } from "./types";
 import FileTypeFilter from "./FileTypeFilter";
 
 interface GoogleDrivePropertiesProps {
   sourceUrl: string;
   onSourceUrlChange: (url: string) => void;
-  fileTypeFilterMode: FilterMode | null;
-  onFileTypeFilterModeChange: (mode: FilterMode | null) => void;
   selectedFileTypes: string[];
   onSelectedFileTypesChange: (types: string[]) => void;
 }
 
 const GoogleDriveProperties = ({
   sourceUrl, onSourceUrlChange,
-  fileTypeFilterMode, onFileTypeFilterModeChange,
   selectedFileTypes, onSelectedFileTypesChange,
 }: GoogleDrivePropertiesProps) => {
   const [urlValidation, setUrlValidation] = useState<"idle" | "valid" | "invalid">("idle");
@@ -64,8 +60,6 @@ const GoogleDriveProperties = ({
       </div>
 
       <FileTypeFilter
-        mode={fileTypeFilterMode}
-        onModeChange={onFileTypeFilterModeChange}
         selected={selectedFileTypes}
         onSelectedChange={onSelectedFileTypesChange}
       />

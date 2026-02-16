@@ -9,9 +9,6 @@ export interface SharePointSiteBlock {
   urlValidation: "idle" | "valid" | "invalid";
   recursive: boolean;
   contentType: ContentType;
-  filterMode: FilterMode;
-  selectedItems: string[];
-  fileTypeFilterMode: FilterMode | null;
   selectedFileTypes: string[];
 }
 
@@ -24,29 +21,25 @@ export interface ConnectorData {
   lastSync: string;
   sourcesSummary: string;
   usedByAssistants: number;
-  // SharePoint specific
   siteBlocks?: SharePointSiteBlock[];
   contentType?: ContentType;
   filterMode?: FilterMode;
   selectedItems?: string[];
   fileTypeFilterMode?: FilterMode | null;
   selectedFileTypes?: string[];
-  // Upload specific
   collectionName?: string;
-  // Google Drive specific
   driveContentType?: "folder" | "shared-drive" | null;
-  // S3 specific
   region?: string;
   prefix?: string;
 }
 
 export const FILE_TYPES = [
   { id: "pdf", label: "PDF", icon: "📄" },
-  { id: "docx", label: "DOC/DOCX", icon: "📝" },
-  { id: "pptx", label: "PPT/PPTX", icon: "📊" },
-  { id: "xlsx", label: "XLS/XLSX", icon: "📈" },
-  { id: "txt", label: "TXT", icon: "📃" },
+  { id: "docx", label: "DOC / DOCX", icon: "📝" },
+  { id: "pptx", label: "PPT / PPTX", icon: "📊" },
+  { id: "xlsx", label: "XLS / XLSX", icon: "📈" },
   { id: "csv", label: "CSV", icon: "📋" },
+  { id: "txt", label: "TXT", icon: "📃" },
   { id: "html", label: "HTML", icon: "🌐" },
 ];
 
@@ -83,8 +76,5 @@ export const createEmptySiteBlock = (): SharePointSiteBlock => ({
   urlValidation: "idle",
   recursive: false,
   contentType: null,
-  filterMode: "include",
-  selectedItems: [],
-  fileTypeFilterMode: null,
   selectedFileTypes: [],
 });
