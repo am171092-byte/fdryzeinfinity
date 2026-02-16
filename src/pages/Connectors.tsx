@@ -1,24 +1,21 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { UploadedFile } from "@/components/connectors/UploadProperties";
-import { Check } from "lucide-react";
+import { Sparkles, CheckCircle, ArrowLeft } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
 import AccessRestricted from "@/components/layout/AccessRestricted";
 import ConnectorsGallery from "@/components/connectors/ConnectorsGallery";
-import ConnectorTypeStep from "@/components/connectors/ConnectorTypeStep";
-import ConnectorPropertiesStep from "@/components/connectors/ConnectorPropertiesStep";
-import ConnectorReviewStep from "@/components/connectors/ConnectorReviewStep";
 import ConnectorDetails from "@/components/connectors/ConnectorDetails";
-import { ConnectorData, ConnectorTypeId, ContentType, FilterMode } from "@/components/connectors/types";
+import SharePointProperties from "@/components/connectors/SharePointProperties";
+import UploadProperties from "@/components/connectors/UploadProperties";
+import GoogleDriveProperties from "@/components/connectors/GoogleDriveProperties";
+import S3Properties from "@/components/connectors/S3Properties";
+import {
+  ConnectorData, ConnectorTypeId, FilterMode,
+  SharePointSiteBlock, createEmptySiteBlock,
+} from "@/components/connectors/types";
 
 type View = "gallery" | "create" | "details";
-type WizardStep = 1 | 2 | 3;
-
-const wizardSteps = [
-  { id: 1, label: "Choose Type", description: "Select connector" },
-  { id: 2, label: "Configure", description: "Set properties" },
-  { id: 3, label: "Review", description: "Create connector" },
-];
 
 const initialConnectors: ConnectorData[] = [
   {
@@ -32,70 +29,70 @@ const initialConnectors: ConnectorData[] = [
     id: "c2", name: "S3 – Reports Bucket", type: "s3",
     sourceUrl: "s3://company-reports/quarterly/",
     status: "syncing", lastSync: "30 min ago", sourcesSummary: "Prefix: quarterly/",
-    usedByAssistants: 1, region: "us-east-1", fileTypeFilterMode: "include",
-    selectedFileTypes: ["pdf", "docx"],
+    usedByAssistants: 1, fileTypeFilterMode: "include", selectedFileTypes: ["pdf", "docx"],
   },
   {
     id: "c3", name: "Google Drive – Training", type: "google-drive",
     sourceUrl: "https://drive.google.com/drive/folders/abc123",
     status: "active", lastSync: "1 day ago", sourcesSummary: "Folder",
-    usedByAssistants: 0, driveContentType: "folder", fileTypeFilterMode: null, selectedFileTypes: [],
+    usedByAssistants: 0, fileTypeFilterMode: null, selectedFileTypes: [],
   },
+];
+
+const typeOptions: { id: ConnectorTypeId; label: string }[] = [
+  { id: "upload", label: "Upload" },
+  { id: "sharepoint", label: "SharePoint" },
+  { id: "google-drive", label: "Google Drive" },
+  { id: "s3", label: "Amazon S3" },
 ];
 
 const Connectors = () => {
   const { role } = useRole();
   const [view, setView] = useState<View>("gallery");
-  const [wizardStep, setWizardStep] = useState<WizardStep>(1);
   const [connectors, setConnectors] = useState<ConnectorData[]>(initialConnectors);
   const [selectedConnectorId, setSelectedConnectorId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
-  // Wizard form state
-  const [connectorType, setConnectorType] = useState<ConnectorTypeId | null>(null);
-  const [sourceUrl, setSourceUrl] = useState("");
+  // Create form state
   const [connectorName, setConnectorName] = useState("");
+  const [connectorType, setConnectorType] = useState<ConnectorTypeId | null>(null);
   // SharePoint
-  const [contentType, setContentType] = useState<ContentType>(null);
-  const [filterMode, setFilterMode] = useState<FilterMode>("include");
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  // Shared file type filter
-  const [fileTypeFilterMode, setFileTypeFilterMode] = useState<FilterMode | null>(null);
-  const [selectedFileTypes, setSelectedFileTypes] = useState<string[]>([]);
+  const [siteBlocks, setSiteBlocks] = useState<SharePointSiteBlock[]>([createEmptySiteBlock()]);
   // Upload
-  const [collectionName, setCollectionName] = useState("");
-  // Google Drive
-  const [driveContentType, setDriveContentType] = useState<"folder" | "shared-drive" | null>(null);
-  // S3
-  const [region, setRegion] = useState("");
-  const [prefix, setPrefix] = useState("");
-  // Upload files
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadFileTypeFilterMode, setUploadFileTypeFilterMode] = useState<FilterMode | null>(null);
+  const [uploadSelectedFileTypes, setUploadSelectedFileTypes] = useState<string[]>([]);
+  // Google Drive
+  const [gdSourceUrl, setGdSourceUrl] = useState("");
+  const [gdFileTypeFilterMode, setGdFileTypeFilterMode] = useState<FilterMode | null>(null);
+  const [gdSelectedFileTypes, setGdSelectedFileTypes] = useState<string[]>([]);
+  // S3
+  const [s3SourceUrl, setS3SourceUrl] = useState("");
+  const [s3FileTypeFilterMode, setS3FileTypeFilterMode] = useState<FilterMode | null>(null);
+  const [s3SelectedFileTypes, setS3SelectedFileTypes] = useState<string[]>([]);
 
   if (role !== "org-admin") {
     return <AccessRestricted requiredRole="Organization Admin" />;
   }
 
-  const resetWizard = () => {
-    setWizardStep(1);
-    setConnectorType(null);
-    setSourceUrl("");
+  const resetForm = () => {
     setConnectorName("");
-    setContentType(null);
-    setFilterMode("include");
-    setSelectedItems([]);
-    setFileTypeFilterMode(null);
-    setSelectedFileTypes([]);
-    setCollectionName("");
-    setDriveContentType(null);
-    setRegion("");
-    setPrefix("");
+    setConnectorType(null);
+    setSiteBlocks([createEmptySiteBlock()]);
     setUploadedFiles([]);
+    setUploadFileTypeFilterMode(null);
+    setUploadSelectedFileTypes([]);
+    setGdSourceUrl("");
+    setGdFileTypeFilterMode(null);
+    setGdSelectedFileTypes([]);
+    setS3SourceUrl("");
+    setS3FileTypeFilterMode(null);
+    setS3SelectedFileTypes([]);
     setIsCreating(false);
   };
 
   const handleCreateNew = () => {
-    resetWizard();
+    resetForm();
     setView("create");
   };
 
@@ -104,30 +101,47 @@ const Connectors = () => {
     setView("details");
   };
 
-  const handleTypeSelect = (type: ConnectorTypeId) => {
-    setConnectorType(type);
-    setWizardStep(2);
-  };
+  // Validation
+  const canCreate = (() => {
+    if (!connectorType) return false;
+    if (connectorType === "upload") return uploadedFiles.length > 0;
+    if (connectorType === "sharepoint") return siteBlocks.every((b) => b.url.trim().length > 0);
+    if (connectorType === "google-drive") return gdSourceUrl.trim().length > 0;
+    if (connectorType === "s3") return s3SourceUrl.trim().length > 0;
+    return false;
+  })();
 
   const handleCreate = () => {
+    if (!connectorType || !canCreate) return;
     setIsCreating(true);
     const typeLabels: Record<ConnectorTypeId, string> = {
       upload: "Upload", sharepoint: "SharePoint", "google-drive": "Google Drive", s3: "Amazon S3",
     };
+
+    const sourceUrl = connectorType === "sharepoint"
+      ? siteBlocks[0].url
+      : connectorType === "upload"
+      ? `uploads://${uploadedFiles.length}-files`
+      : connectorType === "google-drive"
+      ? gdSourceUrl
+      : s3SourceUrl;
+
+    const summary = connectorType === "sharepoint"
+      ? `${siteBlocks.length} site(s)`
+      : connectorType === "upload"
+      ? `${uploadedFiles.length} file(s)`
+      : "Configured";
+
     const newConnector: ConnectorData = {
       id: `c${Date.now()}`,
-      name: connectorName || `${typeLabels[connectorType!]} Connector`,
-      type: connectorType!,
-      sourceUrl: connectorType === "upload" ? `uploads://${uploadedFiles.length}-files` : sourceUrl,
+      name: connectorName.trim() || `${typeLabels[connectorType]} Connector`,
+      type: connectorType,
+      sourceUrl,
       status: "draft",
       lastSync: "Just now",
-      sourcesSummary: contentType
-        ? `${contentType === "document-library" ? "Doc Libraries" : contentType === "list" ? "Lists" : "Pages"}: ${selectedItems.length || "All"}`
-        : collectionName || (region ? `Region: ${region}` : "Configured"),
+      sourcesSummary: summary,
       usedByAssistants: 0,
-      contentType, filterMode, selectedItems,
-      fileTypeFilterMode, selectedFileTypes,
-      collectionName, driveContentType, region, prefix,
+      siteBlocks: connectorType === "sharepoint" ? siteBlocks : undefined,
     };
 
     setTimeout(() => {
@@ -147,20 +161,9 @@ const Connectors = () => {
         connector={selectedConnector}
         onBack={() => setView("gallery")}
         onEdit={() => {
-          // Pre-fill wizard with connector data for editing
+          // For now just go to create with type pre-selected
           setConnectorType(selectedConnector.type);
-          setSourceUrl(selectedConnector.sourceUrl);
           setConnectorName(selectedConnector.name);
-          setContentType(selectedConnector.contentType || null);
-          setFilterMode(selectedConnector.filterMode || "include");
-          setSelectedItems(selectedConnector.selectedItems || []);
-          setFileTypeFilterMode(selectedConnector.fileTypeFilterMode || null);
-          setSelectedFileTypes(selectedConnector.selectedFileTypes || []);
-          setCollectionName(selectedConnector.collectionName || "");
-          setDriveContentType(selectedConnector.driveContentType || null);
-          setRegion(selectedConnector.region || "");
-          setPrefix(selectedConnector.prefix || "");
-          setWizardStep(2);
           setView("create");
         }}
       />
@@ -178,96 +181,118 @@ const Connectors = () => {
     );
   }
 
-  // Create wizard
+  // Single-page Create view
   return (
-    <div className="p-8 flex flex-col items-center min-h-screen">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 max-w-2xl">
-        <h1 className="text-page-title mb-2">New Connector</h1>
-        <p className="text-muted-foreground">Set up a new data source for your AI assistants</p>
-      </motion.div>
+    <div className="p-8 max-w-4xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <button onClick={() => setView("gallery")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to Connectors
+        </button>
 
-      {/* Step Indicator */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full max-w-[700px] mb-8">
-        <div className="flex items-center justify-center gap-0">
-          {wizardSteps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <button
-                onClick={() => step.id <= wizardStep && setWizardStep(step.id as WizardStep)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 ${
-                  wizardStep === step.id
-                    ? "bg-primary text-primary-foreground shadow-lg scale-105"
-                    : step.id < wizardStep
-                    ? "bg-primary-subtle text-primary hover:bg-accent cursor-pointer"
-                    : "bg-muted text-muted-foreground cursor-default"
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  wizardStep === step.id ? "bg-primary-foreground/20" : step.id < wizardStep ? "bg-primary/20" : "bg-muted-foreground/20"
-                }`}>
-                  {step.id < wizardStep ? <Check className="w-3.5 h-3.5" /> : step.id}
-                </div>
-                <div className="text-left">
-                  <div className="text-xs font-medium">{step.label}</div>
-                </div>
-              </button>
-              {index < wizardSteps.length - 1 && (
-                <div className={`w-8 h-0.5 mx-1 transition-colors duration-300 ${step.id < wizardStep ? "bg-primary" : "bg-border"}`} />
+        <h1 className="text-page-title mb-1">Create Connector</h1>
+        <p className="text-muted-foreground mb-8">Set up a new data source for your AI assistants.</p>
+
+        <div className="card-elevated p-6 space-y-6">
+          {/* Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Connector Name</label>
+            <input
+              type="text"
+              value={connectorName}
+              onChange={(e) => setConnectorName(e.target.value)}
+              placeholder="e.g. SharePoint – Policies"
+              maxLength={100}
+              className="w-full h-10 px-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+            />
+            <p className="text-xs text-muted-foreground">This name will appear in Nexus when linking to assistants.</p>
+          </div>
+
+          {/* Type dropdown */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Connector Type <span className="text-destructive">*</span></label>
+            <select
+              value={connectorType || ""}
+              onChange={(e) => setConnectorType(e.target.value ? (e.target.value as ConnectorTypeId) : null)}
+              className="w-full h-10 px-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+            >
+              <option value="">Select connector type…</option>
+              {typeOptions.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Connector Properties — rendered after type selection */}
+          {connectorType && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-4 border-t border-border space-y-2">
+              <h2 className="text-base font-semibold text-foreground mb-4">Connector Properties</h2>
+
+              {connectorType === "sharepoint" && (
+                <SharePointProperties
+                  siteBlocks={siteBlocks}
+                  onSiteBlocksChange={setSiteBlocks}
+                />
               )}
-            </div>
-          ))}
+
+              {connectorType === "upload" && (
+                <UploadProperties
+                  uploadedFiles={uploadedFiles}
+                  onUploadedFilesChange={setUploadedFiles}
+                  fileTypeFilterMode={uploadFileTypeFilterMode}
+                  onFileTypeFilterModeChange={setUploadFileTypeFilterMode}
+                  selectedFileTypes={uploadSelectedFileTypes}
+                  onSelectedFileTypesChange={setUploadSelectedFileTypes}
+                />
+              )}
+
+              {connectorType === "google-drive" && (
+                <GoogleDriveProperties
+                  sourceUrl={gdSourceUrl}
+                  onSourceUrlChange={setGdSourceUrl}
+                  fileTypeFilterMode={gdFileTypeFilterMode}
+                  onFileTypeFilterModeChange={setGdFileTypeFilterMode}
+                  selectedFileTypes={gdSelectedFileTypes}
+                  onSelectedFileTypesChange={setGdSelectedFileTypes}
+                />
+              )}
+
+              {connectorType === "s3" && (
+                <S3Properties
+                  sourceUrl={s3SourceUrl}
+                  onSourceUrlChange={setS3SourceUrl}
+                  fileTypeFilterMode={s3FileTypeFilterMode}
+                  onFileTypeFilterModeChange={setS3FileTypeFilterMode}
+                  selectedFileTypes={s3SelectedFileTypes}
+                  onSelectedFileTypesChange={setS3SelectedFileTypes}
+                />
+              )}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={() => setView("gallery")}
+            className="h-10 px-5 bg-secondary hover:bg-muted text-foreground font-medium rounded-xl text-sm transition-colors"
+          >
+            Cancel
+          </button>
+          <motion.button
+            onClick={handleCreate}
+            disabled={!canCreate || isCreating}
+            whileHover={canCreate ? { scale: 1.02 } : {}}
+            whileTap={canCreate ? { scale: 0.98 } : {}}
+            className="h-11 px-6 bg-primary hover:bg-primary-hover text-primary-foreground font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-primary/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isCreating ? (
+              <><CheckCircle className="w-5 h-5 animate-pulse" /> Creating...</>
+            ) : (
+              <><Sparkles className="w-5 h-5" /> Create Connector</>
+            )}
+          </motion.button>
         </div>
       </motion.div>
-
-      <AnimatePresence mode="wait">
-        {wizardStep === 1 && (
-          <motion.div key="step1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            <ConnectorTypeStep onSelect={handleTypeSelect} onBack={() => setView("gallery")} />
-          </motion.div>
-        )}
-        {wizardStep === 2 && connectorType && (
-          <motion.div key="step2" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            <ConnectorPropertiesStep
-              connectorType={connectorType}
-              connectorName={connectorName} onConnectorNameChange={setConnectorName}
-              sourceUrl={sourceUrl} onSourceUrlChange={setSourceUrl}
-              contentType={contentType} onContentTypeChange={setContentType}
-              filterMode={filterMode} onFilterModeChange={setFilterMode}
-              selectedItems={selectedItems} onSelectedItemsChange={setSelectedItems}
-              fileTypeFilterMode={fileTypeFilterMode} onFileTypeFilterModeChange={setFileTypeFilterMode}
-              selectedFileTypes={selectedFileTypes} onSelectedFileTypesChange={setSelectedFileTypes}
-              collectionName={collectionName} onCollectionNameChange={setCollectionName}
-              driveContentType={driveContentType} onDriveContentTypeChange={setDriveContentType}
-              region={region} onRegionChange={setRegion}
-              prefix={prefix} onPrefixChange={setPrefix}
-              uploadedFiles={uploadedFiles} onUploadedFilesChange={setUploadedFiles}
-              onContinue={() => setWizardStep(3)}
-              onBack={() => setWizardStep(1)}
-            />
-          </motion.div>
-        )}
-        {wizardStep === 3 && connectorType && (
-          <motion.div key="step3" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
-            <ConnectorReviewStep
-              connectorName={connectorName}
-              connectorType={connectorType}
-              sourceUrl={sourceUrl}
-              contentType={contentType}
-              filterMode={filterMode}
-              selectedItems={selectedItems}
-              fileTypeFilterMode={fileTypeFilterMode}
-              selectedFileTypes={selectedFileTypes}
-              collectionName={collectionName}
-              driveContentType={driveContentType}
-              region={region}
-              prefix={prefix}
-              uploadedFilesCount={uploadedFiles.length}
-              onBack={() => setWizardStep(2)}
-              onCreate={handleCreate}
-              isCreating={isCreating}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

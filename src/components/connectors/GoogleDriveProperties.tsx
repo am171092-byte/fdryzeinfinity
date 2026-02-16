@@ -1,12 +1,12 @@
-import { Shield } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Check, X, Shield } from "lucide-react";
 import { FilterMode } from "./types";
 import FileTypeFilter from "./FileTypeFilter";
 
 interface GoogleDrivePropertiesProps {
   sourceUrl: string;
   onSourceUrlChange: (url: string) => void;
-  driveContentType: "folder" | "shared-drive" | null;
-  onDriveContentTypeChange: (type: "folder" | "shared-drive" | null) => void;
   fileTypeFilterMode: FilterMode | null;
   onFileTypeFilterModeChange: (mode: FilterMode | null) => void;
   selectedFileTypes: string[];
@@ -15,45 +15,52 @@ interface GoogleDrivePropertiesProps {
 
 const GoogleDriveProperties = ({
   sourceUrl, onSourceUrlChange,
-  driveContentType, onDriveContentTypeChange,
   fileTypeFilterMode, onFileTypeFilterModeChange,
   selectedFileTypes, onSelectedFileTypesChange,
 }: GoogleDrivePropertiesProps) => {
+  const [urlValidation, setUrlValidation] = useState<"idle" | "valid" | "invalid">("idle");
+
+  const handleValidate = () => {
+    const url = sourceUrl.trim();
+    if (url.startsWith("https://") && url.includes("drive.google.com") && !/\s/.test(url)) {
+      setUrlValidation("valid");
+    } else {
+      setUrlValidation("invalid");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Source URL <span className="text-destructive">*</span></label>
-        <input
-          type="url"
-          value={sourceUrl}
-          onChange={(e) => onSourceUrlChange(e.target.value)}
-          placeholder="https://drive.google.com/drive/folders/..."
-          className="w-full h-10 px-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
-        />
-        <p className="text-xs text-muted-foreground">Paste the Google Drive folder or shared drive link.</p>
-      </div>
-
-      <div className="space-y-3">
-        <label className="text-sm font-medium text-foreground">Content Type (Optional)</label>
-        <div className="grid grid-cols-2 gap-3">
-          {([
-            { id: "folder" as const, label: "Folder" },
-            { id: "shared-drive" as const, label: "Shared Drive" },
-          ]).map((ct) => (
-            <button
-              key={ct.id}
-              type="button"
-              onClick={() => onDriveContentTypeChange(driveContentType === ct.id ? null : ct.id)}
-              className={`p-3 rounded-xl border text-sm font-medium transition-all text-center ${
-                driveContentType === ct.id
-                  ? "border-primary bg-primary-subtle text-primary"
-                  : "border-border bg-card text-foreground hover:border-primary/40"
-              }`}
-            >
-              {ct.label}
-            </button>
-          ))}
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={sourceUrl}
+            onChange={(e) => { onSourceUrlChange(e.target.value); setUrlValidation("idle"); }}
+            placeholder="https://drive.google.com/drive/folders/..."
+            className="flex-1 h-10 px-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+          />
+          <button
+            type="button"
+            onClick={handleValidate}
+            disabled={!sourceUrl.trim()}
+            className="h-10 px-4 bg-secondary hover:bg-muted text-foreground font-medium rounded-lg text-sm transition-colors disabled:opacity-50"
+          >
+            Validate
+          </button>
         </div>
+        <p className="text-xs text-muted-foreground">Paste the Google Drive folder or shared drive link.</p>
+        {urlValidation === "valid" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-xs text-[hsl(142,71%,35%)]">
+            <Check className="w-3.5 h-3.5" /> Valid URL. Access confirmed.
+          </motion.div>
+        )}
+        {urlValidation === "invalid" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-xs text-destructive">
+            <X className="w-3.5 h-3.5" /> Invalid URL. Check the link.
+          </motion.div>
+        )}
       </div>
 
       <FileTypeFilter
@@ -65,7 +72,7 @@ const GoogleDriveProperties = ({
 
       <div className="flex items-center gap-2 p-3 bg-muted rounded-lg text-xs text-muted-foreground">
         <Shield className="w-4 h-4 shrink-0" />
-        OAuth pre-configured by admin.
+        OAuth pre-configured by admin. No secrets are shown.
       </div>
     </div>
   );

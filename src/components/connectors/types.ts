@@ -3,6 +3,18 @@ export type ConnectorStatus = "draft" | "active" | "syncing" | "error";
 export type ContentType = "document-library" | "list" | "pages" | null;
 export type FilterMode = "include" | "exclude";
 
+export interface SharePointSiteBlock {
+  id: string;
+  url: string;
+  urlValidation: "idle" | "valid" | "invalid";
+  recursive: boolean;
+  contentType: ContentType;
+  filterMode: FilterMode;
+  selectedItems: string[];
+  fileTypeFilterMode: FilterMode | null;
+  selectedFileTypes: string[];
+}
+
 export interface ConnectorData {
   id: string;
   name: string;
@@ -13,6 +25,7 @@ export interface ConnectorData {
   sourcesSummary: string;
   usedByAssistants: number;
   // SharePoint specific
+  siteBlocks?: SharePointSiteBlock[];
   contentType?: ContentType;
   filterMode?: FilterMode;
   selectedItems?: string[];
@@ -63,3 +76,15 @@ export const CONNECTOR_TYPES = [
     icon: "Database",
   },
 ];
+
+export const createEmptySiteBlock = (): SharePointSiteBlock => ({
+  id: `site-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+  url: "",
+  urlValidation: "idle",
+  recursive: false,
+  contentType: null,
+  filterMode: "include",
+  selectedItems: [],
+  fileTypeFilterMode: null,
+  selectedFileTypes: [],
+});
