@@ -228,6 +228,7 @@ const Connectors = () => {
           <motion.div key="step2" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}>
             <ConnectorPropertiesStep
               connectorType={connectorType}
+              connectorName={connectorName} onConnectorNameChange={setConnectorName}
               sourceUrl={sourceUrl} onSourceUrlChange={setSourceUrl}
               contentType={contentType} onContentTypeChange={setContentType}
               filterMode={filterMode} onFilterModeChange={setFilterMode}

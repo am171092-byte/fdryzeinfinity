@@ -14,6 +14,8 @@ const typeInfo: Record<ConnectorTypeId, { label: string; Icon: React.ElementType
 
 interface ConnectorPropertiesStepProps {
   connectorType: ConnectorTypeId;
+  connectorName: string;
+  onConnectorNameChange: (name: string) => void;
   sourceUrl: string;
   onSourceUrlChange: (url: string) => void;
   // SharePoint
@@ -47,12 +49,16 @@ interface ConnectorPropertiesStepProps {
 }
 
 const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
-  const { connectorType, sourceUrl, onContinue, onBack, uploadedFiles } = props;
+  const { connectorType, connectorName, sourceUrl, onContinue, onBack, uploadedFiles } = props;
   const { label, Icon } = typeInfo[connectorType];
 
   const isUpload = connectorType === "upload";
-  const canContinue = isUpload ? uploadedFiles.length > 0 : sourceUrl.trim().length > 0;
-  const validationMessage = isUpload
+  const hasName = connectorName.trim().length > 0;
+  const hasSource = isUpload ? uploadedFiles.length > 0 : sourceUrl.trim().length > 0;
+  const canContinue = hasName && hasSource;
+  const validationMessage = !hasName
+    ? "Connector name is required."
+    : isUpload
     ? "Upload at least one file to create this connector."
     : "Source URL is required.";
 
@@ -70,7 +76,21 @@ const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
         </div>
       </div>
 
-      <div className="card-elevated p-6 mb-6">
+      <div className="card-elevated p-6 mb-6 space-y-6">
+        {/* Connector Name — mandatory for all types */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Connector Name <span className="text-destructive">*</span></label>
+          <input
+            type="text"
+            value={connectorName}
+            onChange={(e) => props.onConnectorNameChange(e.target.value)}
+            placeholder="e.g. SharePoint – Policies"
+            maxLength={100}
+            className="w-full h-10 px-3 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+          />
+          <p className="text-xs text-muted-foreground">This name will appear in Nexus when linking to assistants.</p>
+        </div>
+
         {connectorType === "sharepoint" && (
           <SharePointProperties
             sourceUrl={props.sourceUrl} onSourceUrlChange={props.onSourceUrlChange}
