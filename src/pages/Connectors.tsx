@@ -11,7 +11,7 @@ import UploadProperties from "@/components/connectors/UploadProperties";
 import GoogleDriveProperties from "@/components/connectors/GoogleDriveProperties";
 import S3Properties from "@/components/connectors/S3Properties";
 import {
-  ConnectorData, ConnectorTypeId,
+  ConnectorData, ConnectorTypeId, ALL_FILE_TYPE_IDS,
   SharePointSiteBlock, createEmptySiteBlock,
 } from "@/components/connectors/types";
 
@@ -60,13 +60,13 @@ const Connectors = () => {
   const [siteBlocks, setSiteBlocks] = useState<SharePointSiteBlock[]>([createEmptySiteBlock()]);
   // Upload
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [uploadSelectedFileTypes, setUploadSelectedFileTypes] = useState<string[]>([]);
+  const [uploadSelectedFileTypes, setUploadSelectedFileTypes] = useState<string[]>([...ALL_FILE_TYPE_IDS]);
   // Google Drive
   const [gdSourceUrl, setGdSourceUrl] = useState("");
-  const [gdSelectedFileTypes, setGdSelectedFileTypes] = useState<string[]>([]);
+  const [gdSelectedFileTypes, setGdSelectedFileTypes] = useState<string[]>([...ALL_FILE_TYPE_IDS]);
   // S3
   const [s3SourceUrl, setS3SourceUrl] = useState("");
-  const [s3SelectedFileTypes, setS3SelectedFileTypes] = useState<string[]>([]);
+  const [s3SelectedFileTypes, setS3SelectedFileTypes] = useState<string[]>([...ALL_FILE_TYPE_IDS]);
 
   if (role !== "org-admin") {
     return <AccessRestricted requiredRole="Organization Admin" />;
@@ -77,11 +77,11 @@ const Connectors = () => {
     setConnectorType(null);
     setSiteBlocks([createEmptySiteBlock()]);
     setUploadedFiles([]);
-    setUploadSelectedFileTypes([]);
+    setUploadSelectedFileTypes([...ALL_FILE_TYPE_IDS]);
     setGdSourceUrl("");
-    setGdSelectedFileTypes([]);
+    setGdSelectedFileTypes([...ALL_FILE_TYPE_IDS]);
     setS3SourceUrl("");
-    setS3SelectedFileTypes([]);
+    setS3SelectedFileTypes([...ALL_FILE_TYPE_IDS]);
     setIsCreating(false);
   };
 

@@ -70,11 +70,13 @@ export const CONNECTOR_TYPES = [
   },
 ];
 
+export const ALL_FILE_TYPE_IDS = FILE_TYPES.map((ft) => ft.id);
+
 export const createEmptySiteBlock = (): SharePointSiteBlock => ({
   id: `site-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
   url: "",
   urlValidation: "idle",
   recursive: false,
   contentType: null,
-  selectedFileTypes: [],
+  selectedFileTypes: [...ALL_FILE_TYPE_IDS],
 });

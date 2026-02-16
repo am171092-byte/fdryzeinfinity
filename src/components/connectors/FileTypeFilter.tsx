@@ -15,9 +15,9 @@ const FileTypeFilter = ({ selected, onSelectedChange }: FileTypeFilterProps) => 
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-foreground">File Types (Optional)</label>
+      <label className="text-sm font-medium text-foreground">File Types</label>
       <p className="text-xs text-muted-foreground">
-        Select file types to ingest. If none are selected, ingest all supported types.
+        Select file types to ingest. Uncheck types you don't need.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {FILE_TYPES.map((ft) => (
