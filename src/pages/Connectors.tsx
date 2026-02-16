@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { UploadedFile } from "@/components/connectors/UploadProperties";
 import { Check } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
 import AccessRestricted from "@/components/layout/AccessRestricted";
@@ -68,6 +69,8 @@ const Connectors = () => {
   // S3
   const [region, setRegion] = useState("");
   const [prefix, setPrefix] = useState("");
+  // Upload files
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   if (role !== "org-admin") {
     return <AccessRestricted requiredRole="Organization Admin" />;
@@ -87,6 +90,7 @@ const Connectors = () => {
     setDriveContentType(null);
     setRegion("");
     setPrefix("");
+    setUploadedFiles([]);
     setIsCreating(false);
   };
 
@@ -114,7 +118,7 @@ const Connectors = () => {
       id: `c${Date.now()}`,
       name: connectorName || `${typeLabels[connectorType!]} Connector`,
       type: connectorType!,
-      sourceUrl,
+      sourceUrl: connectorType === "upload" ? `uploads://${uploadedFiles.length}-files` : sourceUrl,
       status: "draft",
       lastSync: "Just now",
       sourcesSummary: contentType
@@ -234,6 +238,7 @@ const Connectors = () => {
               driveContentType={driveContentType} onDriveContentTypeChange={setDriveContentType}
               region={region} onRegionChange={setRegion}
               prefix={prefix} onPrefixChange={setPrefix}
+              uploadedFiles={uploadedFiles} onUploadedFilesChange={setUploadedFiles}
               onContinue={() => setWizardStep(3)}
               onBack={() => setWizardStep(1)}
             />
@@ -254,6 +259,7 @@ const Connectors = () => {
               driveContentType={driveContentType}
               region={region}
               prefix={prefix}
+              uploadedFilesCount={uploadedFiles.length}
               onBack={() => setWizardStep(2)}
               onCreate={handleCreate}
               isCreating={isCreating}

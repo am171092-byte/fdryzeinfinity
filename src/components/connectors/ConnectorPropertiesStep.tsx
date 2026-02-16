@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight, Cloud, Upload, HardDrive, Database } from "lucide-react";
 import { ConnectorTypeId, ContentType, FilterMode } from "./types";
 import SharePointProperties from "./SharePointProperties";
-import UploadProperties from "./UploadProperties";
+import UploadProperties, { UploadedFile } from "./UploadProperties";
 import GoogleDriveProperties from "./GoogleDriveProperties";
 import S3Properties from "./S3Properties";
 
@@ -31,6 +31,8 @@ interface ConnectorPropertiesStepProps {
   // Upload
   collectionName: string;
   onCollectionNameChange: (name: string) => void;
+  uploadedFiles: UploadedFile[];
+  onUploadedFilesChange: (files: UploadedFile[]) => void;
   // Google Drive
   driveContentType: "folder" | "shared-drive" | null;
   onDriveContentTypeChange: (type: "folder" | "shared-drive" | null) => void;
@@ -45,9 +47,14 @@ interface ConnectorPropertiesStepProps {
 }
 
 const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
-  const { connectorType, sourceUrl, onContinue, onBack } = props;
+  const { connectorType, sourceUrl, onContinue, onBack, uploadedFiles } = props;
   const { label, Icon } = typeInfo[connectorType];
-  const canContinue = sourceUrl.trim().length > 0;
+
+  const isUpload = connectorType === "upload";
+  const canContinue = isUpload ? uploadedFiles.length > 0 : sourceUrl.trim().length > 0;
+  const validationMessage = isUpload
+    ? "Upload at least one file to create this connector."
+    : "Source URL is required.";
 
   return (
     <div className="w-full max-w-[700px]">
@@ -57,7 +64,9 @@ const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
         </div>
         <div>
           <h2 className="text-section-title">{label} — Configure Properties</h2>
-          <p className="text-xs text-muted-foreground">Only Source URL is required. Everything else is optional.</p>
+          <p className="text-xs text-muted-foreground">
+            {isUpload ? "Upload documents to build your knowledge sources." : "Only Source URL is required. Everything else is optional."}
+          </p>
         </div>
       </div>
 
@@ -74,8 +83,8 @@ const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
         )}
         {connectorType === "upload" && (
           <UploadProperties
-            sourceUrl={props.sourceUrl} onSourceUrlChange={props.onSourceUrlChange}
-            collectionName={props.collectionName} onCollectionNameChange={props.onCollectionNameChange}
+            uploadedFiles={props.uploadedFiles}
+            onUploadedFilesChange={props.onUploadedFilesChange}
             fileTypeFilterMode={props.fileTypeFilterMode} onFileTypeFilterModeChange={props.onFileTypeFilterModeChange}
             selectedFileTypes={props.selectedFileTypes} onSelectedFileTypesChange={props.onSelectedFileTypesChange}
           />
@@ -101,7 +110,7 @@ const ConnectorPropertiesStep = (props: ConnectorPropertiesStepProps) => {
 
       {!canContinue && (
         <div className="flex items-center gap-2 text-xs text-destructive mb-4">
-          Source URL is required.
+          {validationMessage}
         </div>
       )}
 

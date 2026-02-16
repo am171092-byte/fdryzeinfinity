@@ -28,6 +28,7 @@ interface ConnectorReviewStepProps {
   driveContentType: "folder" | "shared-drive" | null;
   region: string;
   prefix: string;
+  uploadedFilesCount?: number;
   onBack: () => void;
   onCreate: () => void;
   isCreating: boolean;
@@ -38,6 +39,7 @@ const ConnectorReviewStep = ({
   contentType, filterMode, selectedItems,
   fileTypeFilterMode, selectedFileTypes,
   collectionName, driveContentType, region, prefix,
+  uploadedFilesCount,
   onBack, onCreate, isCreating,
 }: ConnectorReviewStepProps) => {
   const { label, Icon } = typeInfo[connectorType];
@@ -63,7 +65,11 @@ const ConnectorReviewStep = ({
 
         <div className="space-y-3">
           <Row label="Connector Type" value={label} />
-          <Row label="Source URL" value={sourceUrl} />
+          {connectorType === "upload" ? (
+            <Row label="Files Uploaded" value={`${uploadedFilesCount || 0} file(s)`} />
+          ) : (
+            <Row label="Source URL" value={sourceUrl} />
+          )}
 
           {connectorType === "sharepoint" && contentType && (
             <Row label="Content Type" value={contentTypeLabels[contentType] || ""} />
